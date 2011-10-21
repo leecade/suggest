@@ -4,6 +4,7 @@ body,p,b,dl,dd,table,td,th,input,button,textarea,xmp,pre,img,form,div,ul,ol,li,h
 
 body{ background:#EFEFEF;}
 a{ color:#444;}
+.hlwrap li{list-style:decimal; color:#ddd;}	/*fix highlight*/
 
 .btn{ border:none; cursor:pointer; display:inline-block; text-decoration:none; color:#666; font:bold 12px Arial; text-align:center; outline:none;}
 .btn-save{ width:64px; height:48px; line-height:48px; background:url(../img/bg.png); float:right;}
