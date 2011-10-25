@@ -3,7 +3,15 @@ author: 斯人
 QQ: 103024979
 Email: leecade@163.com
 
-update: 10-15
+bugs:
+
+1. chrome 必须按END（输入框空值时）两次才能滚动页面
+
+update: 2011.10.25
+1. 更改了sug触发的逻辑，之前通过比对当前输入词与查询词，不同则触发。这导致了比较严重的bug，比如当前输入"a"，切换焦点关闭sug后，再次输入"a"不再触发sug。（百度首页亦同，等我去提醒他们）
+2. 回车的保持sug隐藏策略（保留选中项、索引等）
+
+update: 2011.10.15
 1. 增加参数t控制请求时是否增加时间戳
 
 update:
@@ -422,7 +430,18 @@ _.inputTimer = function(n) {
 			}
 			
 			//not equal ==> updata
-			value !== that.q && that.updata(value);
+			//(value !== that.q) && that.updata(value);
+			/*
+			if(value !== that.q || value.length === 1 && value === that.q) {
+				clearInterval(that.t);
+				that.t = 0;
+				that.updata(value)
+			}
+			*/
+			//更新触发显示逻辑！
+			clearInterval(that.t);
+			that.t = 0;
+			that.updata(value);
 		}, that.o.delay);
 	}
 	
@@ -468,7 +487,6 @@ _.keydownMove = function(k) {
 		
 		//console.log(that.i)
 	if(!ol) return;
-	
 	if(that.isHide) {
 		that.isHide = false;
 		return;
@@ -482,7 +500,6 @@ _.keydownMove = function(k) {
 		classNameSelect = o.classNameSelect,
 		q = that.q || "",
 		li;
-		
 	if(s) {
 		removeClass(s, classNameSelect);
 		
@@ -545,7 +562,8 @@ _.inputHandle = function() {
 		// ESC key,hide and reset input value
 		if(k === 27) {
 			that.hide(2);
-			that.isHide = true;
+			//排除掉空数据，没想到更好的方法
+			sugWrap.getElementsByTagName("ol")[0] && (that.isHide = true);
 			!autoCompleteData && (el.value = that.q);
 			that.inputTimer();
 			
@@ -558,17 +576,15 @@ _.inputHandle = function() {
 		
 		// direction key(PgUp, PgDn, End, Home, Left, Up, Right, Down)
 		else if(k > 32 && k < 41) {
-			
 			//change input's focus when value is null because maybe autoFocus
+			//bug: chrome按两次end才能滚动
 			if (!el.value && sugWrap.style.display === "none") {
 				el.blur();
 			}
 			
 			//DOWN/UP key
 			else if(k === 40 || k === 38) {
-				
 				if(!o.pressDelay || pressCount++ === 0) {
-					
 					//if isHide just show
 					that.isHide && that.show();
 					that.keydownMove(k);
@@ -585,7 +601,9 @@ _.inputHandle = function() {
 		// ENTER key
 		else if(k === 13) {
 			that.inputTimer();
-			that.hide();
+			
+			//保持隐藏策略
+			that.hide(2);
 			
 			//onSelect
 			o.onSelect && o.onSelect.call(that);
