@@ -326,7 +326,7 @@ _.reset = function(o) {
 	that.i = -1;
 	
 	//timer
-	that.t = 0;
+	that.inputTimer();
 	
 	//重置隐藏状态，否则切换tab会认为isHide
 	that.isHide = false;
@@ -420,28 +420,39 @@ _.inputTimer = function(n) {
 		that.t = setInterval(function() {
 			value = el.value;
 			
+			//input值为空直接隐藏不触发更新
+			if(!value.trim()) {
+				that.hide(1);
+				
+				that.q = value;
+				return;
+			}
+			
+			//输入值与上次更新值不同时触发更新（包含空格）
+			if(value !== that.q) {
+				that.updata(value);
+			}
+			
+			
+			/*FF监控bug
 			//NUL ==> hide
 			if(!value.trim()) {
 				that.hide(1);
+				
+				
+				//当输入 ==> 清空 然后切换tab时会出现bug，临时修复
+				clearInterval(that.t);
+				that.t = 0;
 				
 				//记录当前值
 				that.q = value;
 				return;
 			}
-			
-			//not equal ==> updata
-			//(value !== that.q) && that.updata(value);
-			/*
-			if(value !== that.q || value.length === 1 && value === that.q) {
-				clearInterval(that.t);
-				that.t = 0;
-				that.updata(value)
-			}
-			*/
 			//更新触发显示逻辑！
 			clearInterval(that.t);
 			that.t = 0;
 			that.updata(value);
+			*/
 		}, that.o.delay);
 	}
 	
@@ -733,6 +744,8 @@ _.fill = function(data, q) {
 			ret = [],
 			li;
 		
+		//与baidu策略保持一致
+		q = q.trim();
 		for(; i<l; i++) {
 			li = data[i];
 			li !== undef && ret.push('<li q="' + li + '"' + (classNameQueryNull && li.indexOf(q) > -1 ? "" : " class=" + classNameQueryNull) + '>' + (classNameQuery ? li.replace(q, '<span class="' + classNameQuery + '">' + q + '</span>') : li) + '</li>');
