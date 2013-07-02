@@ -36,7 +36,7 @@ update:
 ;;(function(WIN, DOC, undef) {
 
 //fastst trim, form: http://blog.stevenlevithan.com/archives/faster-trim-javascript
-String.trim || (String.prototype.trim = function() {
+"".trim || (String.prototype.trim = function() {
 	var str = this,
 		str = str.replace(/^\s\s*/, ''),
 		ws = /\s/,
@@ -46,7 +46,7 @@ String.trim || (String.prototype.trim = function() {
 });
 
 //replace string by object, like "#{name}"
-String.replaceTpl || (String.prototype.replaceTpl = function(o) {
+"".replaceTpl || (String.prototype.replaceTpl = function(o) {
 	return this.replace(/#\{([^}]*)\}/mg, function(a, b) {
 		return a = o[b.trim()]
 	});
@@ -56,7 +56,7 @@ String.replaceTpl || (String.prototype.replaceTpl = function(o) {
 //实体字符全用Unicode表示
 //IE不支持单引号的实体名称，故转为实体编号"&#39;"
 //增加对"©"符的转义
-String.htmlEncode || (String.prototype.htmlEncode = function() {
+"".htmlEncode || (String.prototype.htmlEncode = function() {
 	return String(this).replace(/\x26/g,'&amp;').replace(/\x3c/g,'&lt;').replace(/\x3E/g,'&gt;').replace(/\x22/g, "&quot;").replace(/\x27/g, "&#39;").replace(/\xA9/g, "&copy;");
 });
 
